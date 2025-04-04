@@ -5,7 +5,7 @@ sap.ui.define([
     "sap/m/MessageToast",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
-    "sap/ui/model/Sorter",
+    "sap/ui/model/Sorter", 
     "sap/ui/unified/FileUploader",
     "sap/m/UploadCollectionParameter"
 ], function (Controller, JSONModel, MessageBox, MessageToast, Filter, FilterOperator, Sorter, FileUploader, UploadCollectionParameter) {
