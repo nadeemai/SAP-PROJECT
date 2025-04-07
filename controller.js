@@ -7,7 +7,7 @@ sap.ui.define([
     "sap/m/MessageToast",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
-    "sap/ui/model/Sorter", 
+    "sap/ui/model/Sorter",
     "sap/ui/unified/FileUploader",
     "sap/m/UploadCollectionParameter"
 ], function (Controller, JSONModel, MessageBox, MessageToast, Filter, FilterOperator, Sorter, FileUploader, UploadCollectionParameter) {
@@ -58,12 +58,12 @@ sap.ui.define([
             var oModel = new JSONModel(oData);
             this.getView().setModel(oModel, "products");
 
-            // Initialize new supplier model
+            // Initialize new supplier model with data from captures
             var oNewSupplierData = {
-                spendType: "",
-                supplierType: "",
-                gstin: "",
-                pan: "",
+                spendType: "Direct",
+                supplierType: "Local GST",
+                gstin: "27AICR5957Q1ZC",
+                pan: "AAICR5957Q",
                 address: "Plot No. 12, Industrial Area, Sector 34, Gurgaon, Haryana, 122001, India",
                 isVerified: false,
                 currentStep: 1,
@@ -87,7 +87,12 @@ sap.ui.define([
                 serviceSupplierChannel: "ABC Industries Private Limited",
                 broadcastInformationTechnology: "",
                 additionsInformation: "",
-                supportControl: ""
+                supportControl: "",
+                // Requirement section data from capture 19.1
+                requirement: {
+                    gstinNo: "27AICR5957Q1ZC",
+                    panCardNo: "AAICR5957Q"
+                }
             };
             var oNewSupplierModel = new JSONModel(oNewSupplierData);
             this.getView().setModel(oNewSupplierModel, "newSupplier");
@@ -339,32 +344,35 @@ sap.ui.define([
         },
 
         openDetailedSupplierForm: function (formData) {
-            var sGstin = typeof formData === "object" ? formData.gstin : formData;
-            var sPan = typeof formData === "object" ? formData.pan : formData;
-            var sSpendType = formData.spendType || "Direct";
-            var sSupplierType = formData.supplierType || "LOCAL GST";
-            var sJustification = formData.justification || "";
-            var sAddress = formData.address || "Plot No. 12, Industrial Area, Sector 34, Gurgaon, Haryana, 122001, India";
-            var sPrimaryContactName = formData.primaryContactName || "";
-            var sPrimaryContactNumber = formData.primaryContactNumber || "";
-            var sPrimaryContactEmail = formData.primaryContactEmail || "";
-            var sPurchasingOrg = formData.purchasingOrg || "";
-            var sPaymentTerms = formData.paymentTerms || "";
-            var bIsExistingSupplier = formData.isExistingSupplier || false;
-            var sExistingSupplierCode = formData.existingSupplierCode || "";
-            var bIsDifferentAddress = formData.isDifferentAddress || false;
-            var sDifferentAddress = formData.differentAddress || "";
-            var sVendorCodeCreationType = formData.vendorCodeCreationType || "";
-            var sBuyerRequesting = formData.buyerRequesting || "";
-            var bIsRelatedParty = formData.isRelatedParty || false;
-            var sBusinessJustification = formData.businessJustification || "";
-            var sAdditionalComments = formData.additionalComments || "";
-            var aAttachments = formData.attachments || [];
-            var sSafeNetworks = formData.safeNetworks || "ABC Industries Private Limited";
-            var sServiceSupplierChannel = formData.serviceSupplierChannel || "ABC Industries Private Limited";
-            var sBroadcastInformationTechnology = formData.broadcastInformationTechnology || "";
-            var sAdditionsInformation = formData.additionsInformation || "";
-            var sSupportControl = formData.supportControl || "";
+            var oNewSupplierModel = this.getView().getModel("newSupplier");
+            var oSupplierData = oNewSupplierModel.getData();
+
+            var sGstin = oSupplierData.requirement.gstinNo || (typeof formData === "object" ? formData.gstin : formData);
+            var sPan = oSupplierData.requirement.panCardNo || (typeof formData === "object" ? formData.pan : formData);
+            var sSpendType = oSupplierData.spendType || formData.spendType || "Direct";
+            var sSupplierType = oSupplierData.supplierType || formData.supplierType || "LOCAL GST";
+            var sJustification = oSupplierData.businessJustification || formData.justification || "";
+            var sAddress = oSupplierData.address || formData.address || "Plot No. 12, Industrial Area, Sector 34, Gurgaon, Haryana, 122001, India";
+            var sPrimaryContactName = oSupplierData.primaryContactName || formData.primaryContactName || "";
+            var sPrimaryContactNumber = oSupplierData.primaryContactNumber || formData.primaryContactNumber || "";
+            var sPrimaryContactEmail = oSupplierData.primaryContactEmail || formData.primaryContactEmail || "";
+            var sPurchasingOrg = oSupplierData.purchasingOrg || formData.purchasingOrg || "";
+            var sPaymentTerms = oSupplierData.paymentTerms || formData.paymentTerms || "";
+            var bIsExistingSupplier = oSupplierData.isExistingSupplier || formData.isExistingSupplier || false;
+            var sExistingSupplierCode = oSupplierData.existingSupplierCode || formData.existingSupplierCode || "";
+            var bIsDifferentAddress = oSupplierData.isDifferentAddress || formData.isDifferentAddress || false;
+            var sDifferentAddress = oSupplierData.differentAddress || formData.differentAddress || "";
+            var sVendorCodeCreationType = oSupplierData.vendorCodeCreationType || formData.vendorCodeCreationType || "";
+            var sBuyerRequesting = oSupplierData.buyerRequesting || formData.buyerRequesting || "";
+            var bIsRelatedParty = oSupplierData.isRelatedParty || formData.isRelatedParty || false;
+            var sBusinessJustification = oSupplierData.businessJustification || formData.businessJustification || "";
+            var sAdditionalComments = oSupplierData.additionalComments || formData.additionalComments || "";
+            var aAttachments = oSupplierData.attachments || formData.attachments || [];
+            var sSafeNetworks = oSupplierData.safeNetworks || formData.safeNetworks || "ABC Industries Private Limited";
+            var sServiceSupplierChannel = oSupplierData.serviceSupplierChannel || formData.serviceSupplierChannel || "ABC Industries Private Limited";
+            var sBroadcastInformationTechnology = oSupplierData.broadcastInformationTechnology || formData.broadcastInformationTechnology || "";
+            var sAdditionsInformation = oSupplierData.additionsInformation || formData.additionsInformation || "";
+            var sSupportControl = oSupplierData.supportControl || formData.supportControl || "";
 
             var sHtmlContent = `
 <!DOCTYPE html>
@@ -568,7 +576,11 @@ sap.ui.define([
                     serviceSupplierChannel: "${sServiceSupplierChannel}",
                     broadcastInformationTechnology: "${sBroadcastInformationTechnology}",
                     additionsInformation: "${sAdditionsInformation}",
-                    supportControl: "${sSupportControl}"
+                    supportControl: "${sSupportControl}",
+                    requirement: {
+                        gstinNo: "${sGstin}",
+                        panCardNo: "${sPan}"
+                    }
                 }
             });
             
@@ -687,6 +699,55 @@ sap.ui.define([
                                                             sap.m.MessageToast.show("File uploaded successfully!");
                                                         },
                                                         tooltip: "Upload your file to the local server"
+                                                    })
+                                                ]
+                                            })
+                                        ]
+                                    })
+                                ]
+                            }),
+                            
+                            // Requirement section from capture 19.1
+                            new sap.uxap.ObjectPageSection({
+                                title: "Requirement",
+                                titleUppercase: false,
+                                subSections: [
+                                    new sap.uxap.ObjectPageSubSection({
+                                        blocks: [
+                                            new sap.ui.layout.form.SimpleForm({
+                                                editable: true,
+                                                layout: "ResponsiveGridLayout",
+                                                labelSpanL: 3,
+                                                labelSpanM: 3,
+                                                labelSpanS: 12,
+                                                content: [
+                                                    new sap.m.Label({ text: "GSTIN No.:", design: "Bold", required: true }),
+                                                    new sap.m.Input({
+                                                        value: "${sGstin}",
+                                                        editable: false
+                                                    }),
+                                                    new sap.m.Label({ text: "PAN Card No.:", design: "Bold", required: true }),
+                                                    new sap.m.Input({
+                                                        value: "${sPan}",
+                                                        editable: false
+                                                    }),
+                                                    new sap.m.Label({ text: "Please attach if any other document:", design: "Bold" }),
+                                                    new sap.m.TextArea({
+                                                        placeholder: "Enter additional comments"
+                                                    }),
+                                                    new sap.m.Label({ text: "Attachment:", design: "Bold" }),
+                                                    new sap.ui.unified.FileUploader({
+                                                        id: "fileUploaderRequirement",
+                                                        name: "myFileUploadRequirement",
+                                                        uploadUrl: "/upload/",
+                                                        uploadComplete: function(oEvent) {
+                                                            sap.m.MessageToast.show("File uploaded successfully!");
+                                                        },
+                                                        tooltip: "Upload your file to the local server"
+                                                    }),
+                                                    new sap.m.Label({ text: "Additional Comments:", design: "Bold" }),
+                                                    new sap.m.TextArea({
+                                                        placeholder: "Enter additional comments"
                                                     })
                                                 ]
                                             })
@@ -1271,7 +1332,11 @@ sap.ui.define([
                 serviceSupplierChannel: "ABC Industries Private Limited",
                 broadcastInformationTechnology: "",
                 additionsInformation: "",
-                supportControl: ""
+                supportControl: "",
+                requirement: {
+                    gstinNo: "",
+                    panCardNo: ""
+                }
             });
 
             var sHtmlContent = `
@@ -1459,9 +1524,6 @@ sap.ui.define([
             align-items: center; 
             margin-bottom: 10px; 
         }
-        .field-container label { 
-            margin-bottom: 0; 
-        }
         .radio-group { 
             display: inline-flex; 
             align-items: center; 
@@ -1608,7 +1670,11 @@ sap.ui.define([
             serviceSupplierChannel: "ABC Industries Private Limited",
             broadcastInformationTechnology: "",
             additionsInformation: "",
-            supportControl: ""
+            supportControl: "",
+            requirement: {
+                gstinNo: "",
+                panCardNo: ""
+            }
         };
 
         function updateStepIndicator() {
@@ -1666,6 +1732,7 @@ sap.ui.define([
 
         function verifyGSTIN() {
             formData.gstin = document.getElementById("gstin").value.trim();
+            formData.requirement.gstinNo = formData.gstin;
 
             const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
             if (!formData.gstin) {
@@ -1702,6 +1769,7 @@ sap.ui.define([
 
         function verifyPAN() {
             formData.pan = document.getElementById("pan").value.trim();
+            formData.requirement.panCardNo = formData.pan;
 
             const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
             if (!formData.pan) {
@@ -2035,7 +2103,6 @@ sap.ui.define([
         }
     });
 });
-
 
 
 
